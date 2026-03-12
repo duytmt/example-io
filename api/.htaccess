@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteCond %{HTTPS} !on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+DirectoryIndex index.html
+
+# Security: Block sensitive files
+<FilesMatch "^(config\.php|composer\.lock|composer\.json|\.env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Security: Block sensitive directories
+RewriteRule ^(cache|logs)/ - [F,L,NC]

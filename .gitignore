@@ -1,0 +1,19 @@
+# Logs
+*.log
+logs/
+api/logs/
+
+# Cache
+cache/
+api/cache/
+
+# Secrets
+.env
+config.local.php
+
+# Node
+node_modules/
+
+# Build
+dist/
+build/

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Request Tester | Google Antigravity</title>
+    <link rel="shortcut icon" href="api.png" type="image/x-icon">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/style.css?v=2">
+    <style>
+        /* Sub-page specifics */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 32px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .add-param-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        #resultBox {
+            background: rgba(0, 0, 0, 0.3);
+            color: #a5d6ff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            white-space: pre-wrap;
+            /* Xuống dòng khi quá dài */
+            word-break: break-word;
+            /* Ngắt từ dài để không tràn */
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h2 class="hero-title" style="font-size: 2.5rem; text-align: center;">API Request Tester</h2>
+            <div style="text-align: left;">
+                <label>Phương thức</label>
+                <select id="method">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+
+                <label>URL (Chỉ hỗ trợ các domain trong Whitelist)</label>
+                <div style="margin-bottom: 10px; font-size: 0.85rem; color: #aaa;">
+                    Supported: google.com, inet.vn, whois.inet.vn, n8n.ipi.vn.
+                </div>
+                <input type="text" id="url" placeholder="https://jsonplaceholder.typicode.com/posts/1">
+
+                <h3>Query Parameters (Key / Value)</h3>
+
+                <div id="params"></div>
+
+                <button type="button" class="add-param-btn" onclick="addParam()">+ Thêm tham số</button>
+
+                <div id="bodyBox">
+                    <h3>Body (JSON)</h3>
+                    <textarea id="body" placeholder='{"name": "John"}' rows="5"></textarea>
+                </div>
+
+                <button id="sendBtn" style="width: 100%; margin-top: 10px;">Gửi request</button>
+
+                <h3 style="margin-top: 30px; text-align: center;"></h3>
+                <pre id="resultBox">{Chưa gửi request}</pre>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Contact us: <a href="mailto:info@ipi.vn">info@ipi.vn</a></p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>

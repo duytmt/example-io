@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMTP Request Tester | Google Antigravity</title>
+    <link rel="shortcut icon" href="email.webp" type="image/x-icon">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/style.css?v=2">
+    <style>
+        /* Sub-page specifics */
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 32px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .form-group label {
+            margin-bottom: 0;
+            display: block;
+        }
+
+        .form-group input,
+        .form-group select {
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h2 class="hero-title" style="font-size: 2.5rem;">SMTP Request Tester</h2>
+
+            <form id="smtp-form">
+                <div class="form-group">
+                    <label>Server mail:</label>
+                    <input type="text" name="smtp_host" placeholder="mail.example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Port (Cổng gửi):</label>
+                    <select name="smtp_port" required>
+                        <option value="465">465</option>
+                        <option value="587">587</option>
+                        <option value="25">25</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Kiểu mã hóa:</label>
+                    <select name="smtp_secure">
+                        <option value="ssl">SSL (465)</option>
+                        <option value="tls">TLS (587)</option>
+                        <option value="">None</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tài khoản:</label>
+                    <input type="text" name="smtp_user" placeholder="mail@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <input type="password" name="smtp_pass" placeholder="••••••••" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email nhận kết quả:</label>
+                    <input type="email" name="to" placeholder="mail@example.com" required>
+                </div>
+
+                <button type="submit" style="width: 100%;">Gửi Test</button>
+            </form>
+
+            <div id="result" style="margin-top: 24px; text-align: center; font-weight: 500;"></div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Contact us: <a href="mailto:info@ipi.vn">info@ipi.vn</a></p>
+    </footer>
+
+    <script>
+        document.getElementById('smtp-form').addEventListener('submit', function (e) {
+            e.preventDefault(); // ngăn form reload
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "⏳ Đang gửi...";
+            resultDiv.style.color = "var(--text-secondary)";
+
+            fetch('send_email.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    resultDiv.innerHTML = data;
+                    resultDiv.style.color = "var(--text-color)";
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `❌ Lỗi: ${error}`;
+                    resultDiv.style.color = "#ff6b6b";
+                });
+        });
+    </script>
+</body>
+
+</html>
