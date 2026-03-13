@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Port Checker | Google Antigravity</title>
+    <meta name="description" content="Scan open TCP ports on any domain or IP address. Works like dnschecker.org port scanner.">
+
+    <!-- SVG Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238ab4f8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='8' x2='12' y2='12'></line><line x1='12' y1='16' x2='12.01' y2='16'></line></svg>">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 860px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .input-row .field {
+            flex: 1;
+        }
+
+        .input-row .field-port {
+            flex: 0 0 150px;
+        }
+
+        .input-row input, .input-row select {
+            margin: 6px 0 0;
+        }
+
+        /* Quick-pick port buttons */
+        .quick-ports {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .port-tag {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .port-tag:hover {
+            background: rgba(138,180,248,0.12);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .port-tag.active {
+            background: rgba(138,180,248,0.18);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        /* Result table */
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+            font-size: 0.9rem;
+        }
+
+        .result-table th {
+            text-align: left;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .result-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-open {
+            background: rgba(52, 199, 89, 0.15);
+            color: #34c759;
+            border: 1px solid rgba(52, 199, 89, 0.3);
+        }
+
+        .badge-closed {
+            background: rgba(255, 59, 48, 0.15);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .badge-checking {
+            background: rgba(255, 204, 0, 0.12);
+            color: #ffcc00;
+            border: 1px solid rgba(255, 204, 0, 0.25);
+        }
+
+        .latency {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+
+        #scanBtn {
+            min-width: 130px;
+        }
+
+        .result-area {
+            min-height: 60px;
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            padding: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            .input-row { flex-direction: column; }
+            .input-row .field-port { flex: 1 1 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="https://example.io.vn/" class="logo" aria-label="Về trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </a>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h2 class="hero-title" style="font-size:2.5rem;">Port Checker</h2>
+            <p class="subtitle">Scan open TCP ports on any domain or IP. Supports single or multiple port scan.</p>
+
+            <div style="text-align:left;">
+                <div class="input-row">
+                    <div class="field">
+                        <label>Domain / IP</label>
+                        <input type="text" id="host" placeholder="google.com or 8.8.8.8" autocomplete="off">
+                    </div>
+                    <div class="field-port">
+                        <label>Port(s) <span style="color:var(--text-secondary);font-size:0.8rem;">(e.g. 80,443)</span></label>
+                        <input type="text" id="ports" placeholder="80,443,22">
+                    </div>
+                </div>
+
+                <!-- Quick-pick common ports -->
+                <div class="quick-ports" id="quickPorts">
+                    <span class="port-tag" data-port="21">21 FTP</span>
+                    <span class="port-tag" data-port="22">22 SSH</span>
+                    <span class="port-tag" data-port="25">25 SMTP</span>
+                    <span class="port-tag" data-port="53">53 DNS</span>
+                    <span class="port-tag" data-port="80">80 HTTP</span>
+                    <span class="port-tag" data-port="110">110 POP3</span>
+                    <span class="port-tag" data-port="143">143 IMAP</span>
+                    <span class="port-tag" data-port="443">443 HTTPS</span>
+                    <span class="port-tag" data-port="465">465 SMTPS</span>
+                    <span class="port-tag" data-port="587">587 Submission</span>
+                    <span class="port-tag" data-port="993">993 IMAPS</span>
+                    <span class="port-tag" data-port="995">995 POP3S</span>
+                    <span class="port-tag" data-port="3306">3306 MySQL</span>
+                    <span class="port-tag" data-port="3389">3389 RDP</span>
+                    <span class="port-tag" data-port="5432">5432 PostgreSQL</span>
+                    <span class="port-tag" data-port="6379">6379 Redis</span>
+                    <span class="port-tag" data-port="8080">8080 HTTP-alt</span>
+                    <span class="port-tag" data-port="8443">8443 HTTPS-alt</span>
+                </div>
+
+                <button id="scanBtn" onclick="startScan()" style="width:100%;">🔍 Scan Ports</button>
+
+                <div class="result-area" id="resultArea"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Contact us: <a href="mailto:info@ipi.vn">info@ipi.vn</a></p>
+    </footer>
+
+    <script src="../assets/script.js"></script>
+    <script>
+        // Quick-pick tags toggle
+        document.querySelectorAll('.port-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const port = tag.dataset.port;
+                const portsInput = document.getElementById('ports');
+                const current = portsInput.value.split(',').map(p => p.trim()).filter(Boolean);
+
+                if (tag.classList.contains('active')) {
+                    // Remove
+                    const updated = current.filter(p => p !== port);
+                    portsInput.value = updated.join(',');
+                    tag.classList.remove('active');
+                } else {
+                    // Add
+                    current.push(port);
+                    portsInput.value = current.join(',');
+                    tag.classList.add('active');
+                }
+            });
+        });
+
+        async function startScan() {
+            const host = document.getElementById('host').value.trim();
+            const portsRaw = document.getElementById('ports').value.trim();
+            const resultArea = document.getElementById('resultArea');
+            const btn = document.getElementById('scanBtn');
+
+            if (!host) { resultArea.innerHTML = '<p class="error-msg">⚠️ Vui lòng nhập Domain hoặc IP.</p>'; return; }
+            if (!portsRaw) { resultArea.innerHTML = '<p class="error-msg">⚠️ Vui lòng nhập ít nhất một port.</p>'; return; }
+
+            // Parse & validate ports
+            const ports = [...new Set(
+                portsRaw.split(',')
+                    .map(p => parseInt(p.trim(), 10))
+                    .filter(p => !isNaN(p) && p >= 1 && p <= 65535)
+            )];
+
+            if (ports.length === 0) { resultArea.innerHTML = '<p class="error-msg">⚠️ Không có port hợp lệ (range: 1–65535).</p>'; return; }
+            if (ports.length > 20) { resultArea.innerHTML = '<p class="error-msg">⚠️ Tối đa 20 ports mỗi lần scan.</p>'; return; }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Scanning...';
+
+            // Build initial "checking" table
+            resultArea.innerHTML = buildTable(host, ports.map(port => ({ port, status: 'checking', latency: null })));
+
+            // Scan each port concurrently
+            const promises = ports.map(port => checkPort(host, port));
+            const results = await Promise.all(promises);
+
+            // Update table with results
+            resultArea.innerHTML = buildTable(host, results);
+            btn.disabled = false;
+            btn.textContent = '🔍 Scan Ports';
+        }
+
+        async function checkPort(host, port) {
+            const start = Date.now();
+            try {
+                const res = await fetch('check.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ host, port })
+                });
+                const data = await res.json();
+                if (data.error) return { port, status: 'error', message: data.error, latency: null };
+                return { port, status: data.open ? 'open' : 'closed', latency: data.latency_ms };
+            } catch (e) {
+                return { port, status: 'error', message: e.message, latency: null };
+            }
+        }
+
+        function buildTable(host, results) {
+            const SERVICE_MAP = {
+                21:'FTP', 22:'SSH', 23:'Telnet', 25:'SMTP', 53:'DNS', 80:'HTTP',
+                110:'POP3', 143:'IMAP', 443:'HTTPS', 465:'SMTPS', 587:'Submission',
+                993:'IMAPS', 995:'POP3S', 3306:'MySQL', 3389:'RDP',
+                5432:'PostgreSQL', 6379:'Redis', 8080:'HTTP-alt', 8443:'HTTPS-alt'
+            };
+
+            let rows = results.map(r => {
+                let badge = '';
+                if (r.status === 'checking') {
+                    badge = '<span class="badge badge-checking">⏳ Checking...</span>';
+                } else if (r.status === 'open') {
+                    badge = '<span class="badge badge-open">✔ Open</span>';
+                } else if (r.status === 'closed') {
+                    badge = '<span class="badge badge-closed">✖ Closed</span>';
+                } else {
+                    badge = `<span class="badge badge-closed">⚠ ${r.message || 'Error'}</span>`;
+                }
+                const latencyCell = r.latency !== null ? `<span class="latency">${r.latency} ms</span>` : '—';
+                const service = SERVICE_MAP[r.port] || '—';
+                return `<tr>
+                    <td><strong>${r.port}</strong></td>
+                    <td style="color:var(--text-secondary)">${service}</td>
+                    <td>${badge}</td>
+                    <td>${latencyCell}</td>
+                </tr>`;
+            }).join('');
+
+            return `
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>Port</th>
+                        <th>Service</th>
+                        <th>Status</th>
+                        <th>Latency</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+        }
+    </script>
+</body>
+
+</html>

@@ -19,8 +19,19 @@ function logRequest($message) {
     }
 }
 
-// 1. CORS - Cho phép Frontend gọi API này
-header("Access-Control-Allow-Origin: *"); // Hoặc set cụ thể domain nếu cần bảo mật nghiêm ngặt hơn
+// 1. CORS - Chỉ cho phép các domain tin cậy
+$allowedOrigins = [
+    'https://example.io.vn',
+    'https://www.example.io.vn',
+];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header("Vary: Origin");
+} else {
+    // Fallback khi gọi trực tiếp từ browser hoặc tool không gửi Origin (vd: Postman)
+    header("Access-Control-Allow-Origin: https://example.io.vn");
+}
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
