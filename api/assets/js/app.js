@@ -3,6 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("method").dispatchEvent(new Event("change"));
     document.getElementById("sendBtn").addEventListener("click", sendRequest);
+
+    // Enter key on URL input → Send request
+    document.getElementById("url").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") sendRequest();
+    });
 });
 
 

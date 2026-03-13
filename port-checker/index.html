@@ -248,16 +248,21 @@
                 const current = portsInput.value.split(',').map(p => p.trim()).filter(Boolean);
 
                 if (tag.classList.contains('active')) {
-                    // Remove
                     const updated = current.filter(p => p !== port);
                     portsInput.value = updated.join(',');
                     tag.classList.remove('active');
                 } else {
-                    // Add
                     current.push(port);
                     portsInput.value = current.join(',');
                     tag.classList.add('active');
                 }
+            });
+        });
+
+        // Enter key → Scan
+        ['host', 'ports'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', e => {
+                if (e.key === 'Enter') startScan();
             });
         });
 
@@ -297,18 +302,28 @@
         }
 
         async function checkPort(host, port) {
-            const start = Date.now();
             try {
                 const res = await fetch('check.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ host, port })
                 });
-                const data = await res.json();
+
+                // Đọc raw text trước để debug nếu không phải JSON
+                const text = await res.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    // Server trả HTML (lỗi PHP / 500 / 403)
+                    console.error('check.php non-JSON response:', text.substring(0, 200));
+                    return { port, status: 'error', message: 'Server error (HTTP ' + res.status + ')', latency: null };
+                }
+
                 if (data.error) return { port, status: 'error', message: data.error, latency: null };
                 return { port, status: data.open ? 'open' : 'closed', latency: data.latency_ms };
             } catch (e) {
-                return { port, status: 'error', message: e.message, latency: null };
+                return { port, status: 'error', message: 'Network error: ' + e.message, latency: null };
             }
         }
 
