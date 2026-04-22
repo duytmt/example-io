@@ -4,6 +4,16 @@
 // Nhận vào JSON { "url": "...", "method": "...", "headers": {...}, "body": ... }
 
 // Load configuration
+if (!is_readable('/opt/example-private/api-config.php')) {
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'error' => 'Private API config is missing or unreadable',
+        'hint' => 'Create /opt/example-private/api-config.php from api/config.php.example and ensure root:www-data 0640 permissions'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $config = require '/opt/example-private/api-config.php';
 
 // Helper: Logging
