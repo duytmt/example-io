@@ -1,0 +1,34 @@
+<?php
+// Example config for API Gateway
+// Copy this file to a private location outside webroot, then adjust proxy.php to require it.
+
+return [
+    'allowed_domains' => [
+        'google.com',
+        'inet.vn',
+        'whois.inet.vn',
+        'n8n.ipi.vn',
+    ],
+
+    'api_keys' => [
+        'api.github.com' => 'Bearer YOUR_GITHUB_TOKEN_HERE',
+    ],
+
+    'rate_limit' => [
+        'enabled' => true,
+        'limit' => 60,
+        'period' => 60,
+        'storage' => '/opt/example/api/cache/rate_limit.json'
+    ],
+
+    'cache' => [
+        'enabled' => true,
+        'ttl' => 300,
+        'path' => '/opt/example/api/cache/data/'
+    ],
+
+    'logging' => [
+        'enabled' => true,
+        'path' => '/opt/example/api/logs/access.log'
+    ]
+];

@@ -18,3 +18,4 @@ node_modules/
 dist/
 build/
 api/config.php.migrated
+api/config.local.php

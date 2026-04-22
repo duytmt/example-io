@@ -4,7 +4,7 @@
 // Nhận vào JSON { "url": "...", "method": "...", "headers": {...}, "body": ... }
 
 // Load configuration
-$config = require __DIR__ . '/config.local.php';
+$config = require '/opt/example-private/api-config.php';
 
 // Helper: Logging
 function logRequest($message) {
