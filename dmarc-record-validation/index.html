@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMARC Checker | Example I/O</title>
+    <meta name="description" content="Check DMARC records for your domain. Validate email authentication and generate DMARC policies.">
+
+    <!-- SVG Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238ab4f8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M3 12h18M3 6h18M3 18h18'></path><rect x='2' y='4' width='20' height='16' rx='2'></rect></svg>">
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/style.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 820px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 8px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: var(--input-bg);
+            box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(138, 180, 248, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--button-secondary-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--button-secondary-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--button-secondary-hover);
+        }
+
+        .result-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--divider);
+        }
+
+        .result-section h3 {
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .result-box {
+            background: var(--code-bg);
+            border: 1px solid var(--code-border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 16px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .status.info {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+            border: 1px solid rgba(33, 150, 243, 0.3);
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+        }
+
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-tertiary);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .dmarc-details {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+        }
+
+        .dmarc-details h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .dmarc-details p {
+            margin: 4px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .generate-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(138, 180, 248, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+        }
+
+        .generate-section h4 {
+            margin-top: 0;
+            color: var(--text-primary);
+        }
+
+        .dmarc-example {
+            background: var(--code-bg);
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            color: var(--text-primary);
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="/" class="logo" aria-label="Về trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+        </a>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h2>DMARC Checker</h2>
+            <p class="subtitle">Check DMARC records for email authentication</p>
+
+            <div class="form-group">
+                <label for="domain">Domain Name</label>
+                <input type="text" id="domain" placeholder="example.com" value="">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="checkBtn">Check DMARC Record</button>
+            </div>
+
+            <div class="loader" id="loader"></div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="result-section hidden">
+                <div id="statusBox"></div>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>Contact Example I/O Support Teams: <a href="mailto:support@example.io.vn">support@example.io.vn</a></p>
+    </footer>
+
+    <script>
+        const domainInput = document.getElementById('domain');
+        const checkBtn = document.getElementById('checkBtn');
+        const loader = document.getElementById('loader');
+        const resultSection = document.getElementById('resultSection');
+        const statusBox = document.getElementById('statusBox');
+        const resultContent = document.getElementById('resultContent');
+
+        checkBtn.addEventListener('click', checkDMARCRecord);
+        domainInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkDMARCRecord();
+        });
+
+        async function checkDMARCRecord() {
+            const domain = domainInput.value.trim();
+            if (!domain) {
+                showError('Vui lòng nhập tên miền');
+                return;
+            }
+
+            loader.style.display = 'block';
+            resultSection.classList.add('hidden');
+            checkBtn.disabled = true;
+
+            try {
+                const response = await fetch('check.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'domain=' + encodeURIComponent(domain)
+                });
+
+                const data = await response.json();
+                loader.style.display = 'none';
+
+                if (data.error) {
+                    showError(data.error);
+                } else if (data.found) {
+                    showSuccess(data.domain, data.record);
+                } else {
+                    showNotFound(data.domain);
+                }
+            } catch (error) {
+                loader.style.display = 'none';
+                showError('Lỗi khi kiểm tra: ' + error.message);
+            } finally {
+                checkBtn.disabled = false;
+            }
+        }
+
+        function showError(message) {
+            resultSection.classList.remove('hidden');
+            statusBox.innerHTML = `<div class="status error"><span class="status-icon">✕</span> <span>${message}</span></div>`;
+            resultContent.innerHTML = '';
+        }
+
+        function showSuccess(domain, record) {
+            resultSection.classList.remove('hidden');
+            statusBox.innerHTML = `<div class="status success"><span class="status-icon">✓</span> <span>Tìm thấy bản ghi DMARC cho ${domain}</span></div>`;
+
+            resultContent.innerHTML = `
+                <h3>DMARC Record</h3>
+                <div class="result-box">${escapeHtml(record)}</div>
+                <div class="dmarc-details">
+                    <h4>Các Thông Tin:</h4>
+                    <p><strong>Domain:</strong> ${escapeHtml(domain)}</p>
+                    <p><strong>Loại bản ghi:</strong> DNS TXT</p>
+                    <p><strong>Tên bản ghi:</strong> _dmarc.${escapeHtml(domain)}</p>
+                </div>
+            `;
+        }
+
+        function showNotFound(domain) {
+            resultSection.classList.remove('hidden');
+            statusBox.innerHTML = `<div class="status info"><span class="status-icon">ℹ</span> <span>Không tìm thấy bản ghi DMARC cho ${domain}</span></div>`;
+
+            resultContent.innerHTML = `
+                <div class="generate-section">
+                    <h4>📋 Tạo bản ghi DMARC</h4>
+                    <p>Miền này chưa có bản ghi DMARC. Bạn có thể thêm bản ghi DMARC sau đây vào DNS:</p>
+                    
+                    <h4 style="margin-top: 16px;">Bản ghi DMARC cơ bản:</h4>
+                    <div class="dmarc-example">v=DMARC1; p=none; rua=mailto:admin@${escapeHtml(domain)}</div>
+                    
+                    <h4>Bản ghi DMARC với chính sách:</h4>
+                    <div class="dmarc-example">v=DMARC1; p=quarantine; rua=mailto:admin@${escapeHtml(domain)}; ruf=mailto:admin@${escapeHtml(domain)}; fo=1</div>
+
+                    <h4>Bản ghi DMARC nghiêm ngặt:</h4>
+                    <div class="dmarc-example">v=DMARC1; p=reject; rua=mailto:admin@${escapeHtml(domain)}; ruf=mailto:admin@${escapeHtml(domain)}; fo=1</div>
+
+                    <h4>Hướng dẫn thêm DMARC vào DNS:</h4>
+                    <ol style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 12px;">
+                        <li>Đăng nhập vào Bảng điều khiển DNS của bạn</li>
+                        <li>Tạo bản ghi TXT mới</li>
+                        <li>Đặt tên bản ghi là: <code style="background: var(--code-bg); padding: 2px 6px; border-radius: 4px;">_dmarc</code></li>
+                        <li>Sao chép bản ghi DMARC ở trên vào giá trị TXT</li>
+                        <li>Lưu thay đổi (có thể mất 24-48 giờ để cập nhật toàn cầu)</li>
+                        <li>Quay lại trang này để xác nhận bản ghi đã được thêm</li>
+                    </ol>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
