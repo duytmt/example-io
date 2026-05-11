@@ -7,7 +7,7 @@ Bộ công cụ web nhỏ phục vụ test API, SMTP, Port Checker và SSL Conve
 - `api/` - API Request Tester + proxy backend
 - `smtp/` - SMTP test tool
 - `port-checker/` - TCP port checker
-- `ssl-converter/` - SSL convert tool
+- `dmarc-record-validation/` - DMARC Checker
 
 ## Lưu ý bảo mật
 
